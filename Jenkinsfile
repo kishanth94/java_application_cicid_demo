@@ -42,12 +42,12 @@ pipeline{
 	    steps{
 		script{
 		    def mavenPom = readMavenPom file: 'pom.xml'
-		    def nexusRepoName = mavenPom.version.endsWith("SNAPSHOT") ? "javawebapplication-snapshot" : "javawebapplication-release"
+		    def nexusRepoName = mavenPom.version.endsWith("SNAPSHOT") ? "SimpleJavaProject-snapshot" : "SimpleJavaProject-release"
 		    nexusArtifactUploader artifacts: [
 			[
 			    artifactId: 'SimpleJavaProject', 
 		            classifier: '', 
-			    file: "target/javawebapplication-${mavenPom.version}.war", 
+			    file: "target/SimpleJavaProject-${mavenPom.version}.war", 
 			    type: 'war'
 			]
 			], 
@@ -68,8 +68,8 @@ pipeline{
                 sshagent(['tomcat-keypair']) {
                 sh """
 		    echo $WORKSPACE
-		    mv target/*.war target/javawebapplication.war
-                    scp -o StrictHostKeyChecking=no target/javawebapplication.war  ec2-user@172.31.42.91:/opt/tomcat8/webapps/
+		    mv target/*.war target/SimpleJavaProject.war
+                    scp -o StrictHostKeyChecking=no target/SimpleJavaProject.war  ec2-user@172.31.42.91:/opt/tomcat8/webapps/
                     ssh ec2-user@172.31.42.91 /opt/tomcat8/bin/shutdown.sh
                     ssh ec2-user@172.31.42.91 /opt/tomcat8/bin/startup.sh
                 
