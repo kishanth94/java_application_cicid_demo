@@ -4,7 +4,7 @@ pipeline{
     stages{
         stage("Git Checkout"){
             steps{
-                git credentialsId: 'github', url: 'https://github.com/kishanth94/javawebapplication'
+                git credentialsId: 'github', url: 'https://github.com/kishanth94/java_application_cicid_demo/'
             }
         }
 	
@@ -45,15 +45,15 @@ pipeline{
 		    def nexusRepoName = mavenPom.version.endsWith("SNAPSHOT") ? "javawebapplication-snapshot" : "javawebapplication-release"
 		    nexusArtifactUploader artifacts: [
 			[
-			    artifactId: 'javawebapplication', 
+			    artifactId: 'SimpleJavaProject', 
 		            classifier: '', 
 			    file: "target/javawebapplication-${mavenPom.version}.war", 
 			    type: 'war'
 			]
 			], 
 			    credentialsId: 'nexus3', 
-			    groupId: 'in.javahome', 
-			    nexusUrl: '172.31.45.236:8081', 
+			    groupId: 'com.adevguide.java', 
+			    nexusUrl: '172.31.25.143:8081', 
 			    nexusVersion: 'nexus3', 
 			    protocol: 'http', 
 			    repository: nexusRepoName, 
@@ -69,9 +69,9 @@ pipeline{
                 sh """
 		    echo $WORKSPACE
 		    mv target/*.war target/javawebapplication.war
-                    scp -o StrictHostKeyChecking=no target/javawebapplication.war  ec2-user@172.31.25.215:/opt/tomcat8/webapps/
-                    ssh ec2-user@172.31.25.215 /opt/tomcat8/bin/shutdown.sh
-                    ssh ec2-user@172.31.25.215 /opt/tomcat8/bin/startup.sh
+                    scp -o StrictHostKeyChecking=no target/javawebapplication.war  ec2-user@172.31.42.91:/opt/tomcat8/webapps/
+                    ssh ec2-user@172.31.42.91 /opt/tomcat8/bin/shutdown.sh
+                    ssh ec2-user@172.31.42.91 /opt/tomcat8/bin/startup.sh
                 
                 """
                 }
@@ -85,17 +85,15 @@ pipeline{
 	      echo 'Deleting the Workspace'
 	      deleteDir() /* Clean Up our Workspace */
 	    }
-	    //success {
-		//mail to: 'devopsawsfreetier@gmail.com',
-		     //subject: "Success Build Pipeline: ${currentBuild.fullDisplayName}",
-		     //body: "The pipeline ${env.BUILD_URL} completed successfully"
-	    //}
-	    //failure {
-//  		mail to: 'devopsawsfreetier@gmail.com',
-// 		     subject: "Failed Build Pipeline: ${currentBuild.fullDisplayName}",
-// 		     body: "Something is wrong with ${env.BUILD_URL}"
-// 	    }
+	    success {
+		mail to: 'kishanthisavailable@gmail.com',
+		   subject: "Success Build Pipeline: ${currentBuild.fullDisplayName}",
+		    body: "The pipeline ${env.BUILD_URL} completed successfully"
+	    }
+	    failure {
+  		mail to: 'kishanthisavailable@gmail.com',
+ 		     subject: "Failed Build Pipeline: ${currentBuild.fullDisplayName}",
+ 		     body: "Something is wrong with ${env.BUILD_URL}"
+ 	    }
     }
 }
-
-
